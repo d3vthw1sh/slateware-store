@@ -11,7 +11,7 @@ import CategoryBar from "../components/CategoryBar";
 import Footer from "../components/Footer";
 
 function LandingScreen() {
-  const bgColor = useColorModeValue("gray.50", "gray.800");
+  const bgColor = useColorModeValue("white", "#0f1018");
   const textColor = useColorModeValue("gray.600", "gray.300");
 
   return (

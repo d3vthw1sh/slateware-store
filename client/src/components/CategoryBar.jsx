@@ -1,13 +1,12 @@
-import {
-  Box,
-  Flex,
-  Link,
-  useColorModeValue,
-  HStack,
-} from "@chakra-ui/react";
+import { Box, Flex, Link, useColorModeValue, HStack } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-const categories = ["CLOTH", "NEW ARRIVALS", "COLLECTIONS", "SPECIAL"];
+const categories = [
+  { label: "PRODUCTS", path: "/products" },
+  { label: "NEW ARRIVALS", path: "/new-arrivals" },
+  { label: "COLLECTIONS", path: "/collections" },
+  { label: "SPECIAL", path: "/special" },
+];
 
 function CategoryBar() {
   const linkColor = useColorModeValue("gray.600", "gray.300");
@@ -19,7 +18,7 @@ function CategoryBar() {
       borderTop="1px solid"
       borderBottom="1px solid"
       borderColor={borderColor}
-      bg={useColorModeValue("white", "gray.800")}
+      bg={useColorModeValue("white", "black")}
       px={{ base: 4, md: 8 }}
       py={2}
       overflowX="auto"
@@ -28,9 +27,9 @@ function CategoryBar() {
         <HStack spacing={{ base: 4, md: 8 }} whiteSpace="nowrap">
           {categories.map((cat) => (
             <Link
-              key={cat}
+              key={cat.path}
               as={RouterLink}
-              to={`/${cat.toLowerCase().replace(" ", "-")}`}
+              to={cat.path}
               fontWeight="500"
               fontSize="sm"
               letterSpacing="wider"
@@ -51,7 +50,7 @@ function CategoryBar() {
                 },
               }}
             >
-              {cat}
+              {cat.label}
             </Link>
           ))}
         </HStack>
