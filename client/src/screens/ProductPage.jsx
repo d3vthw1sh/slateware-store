@@ -87,7 +87,7 @@ function ProductPage({ cart, setCart }) {
               Loading...
             </Text>
           ) : (
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={8}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing={8}>
               {filteredProducts.map((product) => (
                 <ProductCard
                   key={product._id}

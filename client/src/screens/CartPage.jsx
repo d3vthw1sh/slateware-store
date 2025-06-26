@@ -5,7 +5,6 @@ import {
   Text,
   Button,
   IconButton,
-  Input,
   useColorModeValue,
   Image,
   VStack,
@@ -106,14 +105,25 @@ function CartPage({ cart, setCart }) {
                       </Box>
                     </HStack>
                     <HStack>
-                      <Input
+                      <IconButton
+                        icon={<Text>-</Text>}
                         size="sm"
-                        type="number"
-                        w="60px"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateQuantity(item._id, e.target.value)
+                        variant="outline"
+                        onClick={() =>
+                          updateQuantity(item._id, item.quantity - 1)
                         }
+                        isDisabled={item.quantity <= 1}
+                        aria-label="Decrease quantity"
+                      />
+                      <Text px={2}>{item.quantity}</Text>
+                      <IconButton
+                        icon={<Text>+</Text>}
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          updateQuantity(item._id, item.quantity + 1)
+                        }
+                        aria-label="Increase quantity"
                       />
                       <IconButton
                         icon={<FaTrash />}
