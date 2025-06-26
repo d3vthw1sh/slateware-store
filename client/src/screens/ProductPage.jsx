@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Footer from "../components/Footer";
 
-function ProductPage() {
+function ProductPage({ cart, setCart }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -20,7 +20,6 @@ function ProductPage() {
     axios
       .get("/api/products")
       .then((res) => {
-        console.log("✅ Fetched products:", res.data);
         setProducts(res.data);
       })
       .catch((err) => {
@@ -40,11 +39,21 @@ function ProductPage() {
 
   const handleToggleFavorites = () => {
     setShowOnlyFavorites((prev) => !prev);
-    if (!showOnlyFavorites) {
-      setSelectedCategory("Favorites");
-    } else {
-      setSelectedCategory("All");
-    }
+    setSelectedCategory(!showOnlyFavorites ? "Favorites" : "All");
+  };
+
+  const handleAddToCart = (product) => {
+    setCart((prev) => {
+      const existing = prev.find((item) => item._id === product._id);
+      if (existing) {
+        return prev.map((item) =>
+          item._id === product._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
   };
 
   const filteredProducts = products.filter((product) => {
@@ -52,7 +61,6 @@ function ProductPage() {
       selectedCategory === "All" ||
       product.category?.toLowerCase() === selectedCategory.toLowerCase();
     const isFavorited = favorites.includes(product._id);
-
     return showOnlyFavorites ? isFavorited : matchesCategory;
   });
 
@@ -65,6 +73,7 @@ function ProductPage() {
             setShowOnlyFavorites(false);
           }}
           onShowFavorites={handleToggleFavorites}
+          cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)}
         />
         <CategoryBar />
 
@@ -87,6 +96,7 @@ function ProductPage() {
                   image={product.image}
                   isFavorited={favorites.includes(product._id)}
                   onToggleFavorite={() => toggleFavorite(product._id)}
+                  addToCart={() => handleAddToCart(product)}
                 />
               ))}
             </SimpleGrid>

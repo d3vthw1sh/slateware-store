@@ -10,7 +10,14 @@ import {
 } from "@chakra-ui/react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
-function ProductCard({ name, price, image, isFavorited, onToggleFavorite }) {
+function ProductCard({
+  name,
+  price,
+  image,
+  isFavorited,
+  onToggleFavorite,
+  addToCart,
+}) {
   const bg = useColorModeValue("white", "#0f1018");
   const textColor = useColorModeValue("gray.700", "gray.300");
   const priceColor = useColorModeValue("gray.500", "gray.400");
@@ -62,8 +69,9 @@ function ProductCard({ name, price, image, isFavorited, onToggleFavorite }) {
             variant="outline"
             colorScheme="gray"
             _hover={{ bg: hoverBg }}
+            onClick={addToCart}
           >
-            View
+            Add to Cart
           </Button>
 
           <IconButton

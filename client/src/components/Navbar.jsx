@@ -13,13 +13,14 @@ import {
   DrawerHeader,
   DrawerBody,
   useDisclosure,
+  Badge,
 } from "@chakra-ui/react";
 import { HamburgerIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { FaSearch, FaHeart, FaShoppingBag, FaUser } from "react-icons/fa";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
 
-function Navbar({ onFilter, onShowFavorites }) {
+function Navbar({ onFilter, onShowFavorites, cartCount = 0 }) {
   const { colorMode, toggleColorMode } = useColorMode();
   const iconColor = useColorModeValue("gray.700", "gray.100");
   const bgColor = useColorModeValue("whiteAlpha.800", "#0f1018");
@@ -117,23 +118,40 @@ function Navbar({ onFilter, onShowFavorites }) {
             fontSize="lg"
             color={iconColor}
           />
+
           <IconButton
             icon={<FaHeart />}
             variant="ghost"
             aria-label="Favorites"
             fontSize="lg"
             color={iconColor}
-            onClick={() => {
-              if (onShowFavorites) onShowFavorites();
-            }}
+            onClick={() => onShowFavorites && onShowFavorites()}
           />
-          <IconButton
-            icon={<FaShoppingBag />}
-            variant="ghost"
-            aria-label="Cart"
-            fontSize="lg"
-            color={iconColor}
-          />
+
+          <Box position="relative">
+            <IconButton
+              as={RouterLink}
+              to="/cart"
+              icon={<FaShoppingBag />}
+              variant="ghost"
+              aria-label="Cart"
+              fontSize="lg"
+              color={iconColor}
+            />
+            {cartCount > 0 && (
+              <Badge
+                position="absolute"
+                top="-1"
+                right="-1"
+                fontSize="0.7em"
+                colorScheme="red"
+                borderRadius="full"
+                px={2}
+              >
+                {cartCount}
+              </Badge>
+            )}
+          </Box>
         </Flex>
       </Flex>
 
