@@ -12,42 +12,31 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { FaTrash } from "react-icons/fa";
-import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link as RouterLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateQuantity,
+  removeFromCart,
+  clearCart,
+} from "../redux/actions/cartActions";
+import { useState } from "react";
 
-function CartPage({ cart, setCart }) {
+function CartPage() {
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart); // ✅ FIXED here
+
   const bg = useColorModeValue("white", "black");
   const textColor = useColorModeValue("black", "gray.100");
-  const boxBg = useColorModeValue("white", "gray.800");
   const outlineHoverBg = useColorModeValue("gray.100", "gray.700");
   const borderColor = useColorModeValue("gray.200", "gray.700");
 
   const toast = useToast();
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  const updateQuantity = (id, quantity) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item._id === id
-          ? { ...item, quantity: Math.max(1, parseInt(quantity) || 1) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id) => {
-    setCart((prev) => prev.filter((item) => item._id !== id));
-  };
-
   const handleCheckout = () => {
-    setCart([]);
-    localStorage.removeItem("cart");
+    dispatch(clearCart());
     setCheckoutSuccess(true);
 
     toast({
@@ -64,6 +53,7 @@ function CartPage({ cart, setCart }) {
   return (
     <Box bg={bg} minH="100vh">
       <Navbar cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)} />
+
       <Flex minH="100vh" align="center" justify="center" px={6}>
         <Flex maxW="5xl" w="full" direction={{ base: "column", md: "row" }}>
           <Box p={8} flex={1} color={textColor}>
@@ -104,13 +94,14 @@ function CartPage({ cart, setCart }) {
                         </Text>
                       </Box>
                     </HStack>
+
                     <HStack>
                       <IconButton
                         icon={<Text>-</Text>}
                         size="sm"
                         variant="outline"
                         onClick={() =>
-                          updateQuantity(item._id, item.quantity - 1)
+                          dispatch(updateQuantity(item._id, item.quantity - 1))
                         }
                         isDisabled={item.quantity <= 1}
                         aria-label="Decrease quantity"
@@ -121,7 +112,7 @@ function CartPage({ cart, setCart }) {
                         size="sm"
                         variant="outline"
                         onClick={() =>
-                          updateQuantity(item._id, item.quantity + 1)
+                          dispatch(updateQuantity(item._id, item.quantity + 1))
                         }
                         aria-label="Increase quantity"
                       />
@@ -129,7 +120,7 @@ function CartPage({ cart, setCart }) {
                         icon={<FaTrash />}
                         colorScheme="red"
                         size="sm"
-                        onClick={() => removeItem(item._id)}
+                        onClick={() => dispatch(removeFromCart(item._id))}
                         aria-label="Remove"
                       />
                     </HStack>

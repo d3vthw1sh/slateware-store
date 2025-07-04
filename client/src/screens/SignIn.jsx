@@ -16,6 +16,10 @@ import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+const EmailComponent = () => {
+  return 
+}
+
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

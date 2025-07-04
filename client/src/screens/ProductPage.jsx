@@ -6,12 +6,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Footer from "../components/Footer";
 
-function ProductPage({ cart, setCart }) {
+// 🛒 Redux imports
+import { useSelector, useDispatch } from "react-redux";
+import { addToCart } from "../redux/actions/cartActions";
+
+function ProductPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [favorites, setFavorites] = useState([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart); // 🛒 Access just the cart array
 
   const bgColor = useColorModeValue("white", "#0f1018");
   const labelColor = useColorModeValue("gray.600", "gray.400");
@@ -42,18 +49,9 @@ function ProductPage({ cart, setCart }) {
     setSelectedCategory(!showOnlyFavorites ? "Favorites" : "All");
   };
 
+  // ✅ Use Redux to add to cart
   const handleAddToCart = (product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item._id === product._id);
-      if (existing) {
-        return prev.map((item) =>
-          item._id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
+    dispatch(addToCart(product));
   };
 
   const filteredProducts = products.filter((product) => {
