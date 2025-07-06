@@ -1,4 +1,3 @@
-// ✅ SignIn.jsx
 import {
   Box,
   Flex,
@@ -11,22 +10,60 @@ import {
   Text,
   Link,
   useColorModeValue,
+  useToast,
+  Spinner,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { login, googleLogin } from "../redux/slices/authSlice";
 import Navbar from "../components/Navbar";
-
-const EmailComponent = () => {
-  return 
-}
+import { GoogleLogin } from "@react-oauth/google";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState({ email: false, password: false });
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const { user, loading, error } = useSelector((state) => state.auth);
+
   const isEmailInvalid = touched.email && !email.includes("@");
   const isPasswordInvalid = touched.password && password.length < 1;
+
+  useEffect(() => {
+    if (user) {
+      toast({
+        title: "Login successful!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+      navigate("/");
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: error,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  }, [error]);
+
+  const handleSubmit = () => {
+    dispatch(login({ email, password }));
+  };
+
+  const handleGoogleLogin = (credentialResponse) => {
+    dispatch(googleLogin(credentialResponse.credential));
+  };
 
   const bg = useColorModeValue("white", "black");
   const textColor = useColorModeValue("black", "gray.100");
@@ -78,9 +115,25 @@ function SignIn() {
               _hover={{ opacity: 0.85 }}
               w="full"
               mt={4}
+              onClick={handleSubmit}
+              isLoading={loading}
             >
               Log In
             </Button>
+
+            <Box my={4} textAlign="center">
+              <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={() =>
+                  toast({
+                    title: "Google login failed.",
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true,
+                  })
+                }
+              />
+            </Box>
 
             <Text mt={4} fontSize="sm">
               <Link color={linkColor}>Forgot your password?</Link>

@@ -1,13 +1,17 @@
-import { createStore, combineReducers } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 import cartReducer from "./slices/cartSlice";
+import authReducer from "./slices/authSlice";
 
-const rootReducer = combineReducers({
-  cart: cartReducer,
+const store = configureStore({
+  reducer: {
+    cart: cartReducer,
+    auth: authReducer,
+  },
 });
 
-const store = createStore(
-  rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+// ✅ Persist cart to localStorage automatically
+store.subscribe(() => {
+  localStorage.setItem("cart", JSON.stringify(store.getState().cart));
+});
 
 export default store;

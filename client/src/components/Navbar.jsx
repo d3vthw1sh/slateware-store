@@ -14,11 +14,15 @@ import {
   DrawerBody,
   useDisclosure,
   Badge,
+  Button,
+  HStack,
 } from "@chakra-ui/react";
 import { HamburgerIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { FaSearch, FaHeart, FaShoppingBag, FaUser } from "react-icons/fa";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
 
 function Navbar({ onFilter, onShowFavorites, cartCount = 0 }) {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -28,9 +32,14 @@ function Navbar({ onFilter, onShowFavorites, cartCount = 0 }) {
   const inputBg = useColorModeValue("gray.100", "#1a1b26");
   const placeholderColor = useColorModeValue("gray.400", "gray.500");
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const handleLogout = () => dispatch(logout());
 
   return (
     <Box
@@ -56,7 +65,6 @@ function Navbar({ onFilter, onShowFavorites, cartCount = 0 }) {
             color={iconColor}
             onClick={onOpen}
           />
-
           <IconButton
             icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
             onClick={toggleColorMode}
@@ -65,7 +73,6 @@ function Navbar({ onFilter, onShowFavorites, cartCount = 0 }) {
             fontSize="lg"
             color={iconColor}
           />
-
           <IconButton
             icon={<FaSearch />}
             variant="ghost"
@@ -109,15 +116,26 @@ function Navbar({ onFilter, onShowFavorites, cartCount = 0 }) {
 
         {/* RIGHT ICONS */}
         <Flex align="center" gap={3}>
-          <IconButton
-            as={RouterLink}
-            to="/signin"
-            icon={<FaUser />}
-            variant="ghost"
-            aria-label="Login"
-            fontSize="lg"
-            color={iconColor}
-          />
+          {user ? (
+            <HStack spacing={3}>
+              <Text fontSize="sm" color={iconColor}>
+                Hi, {user.name || user.email}
+              </Text>
+              <Button size="sm" variant="outline" onClick={handleLogout}>
+                Logout
+              </Button>
+            </HStack>
+          ) : (
+            <IconButton
+              as={RouterLink}
+              to="/signin"
+              icon={<FaUser />}
+              variant="ghost"
+              aria-label="Login"
+              fontSize="lg"
+              color={iconColor}
+            />
+          )}
 
           <IconButton
             icon={<FaHeart />}

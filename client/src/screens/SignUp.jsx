@@ -1,4 +1,3 @@
-// ✅ SignUp.jsx
 import {
   Box,
   Flex,
@@ -11,10 +10,13 @@ import {
   Text,
   Link,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { registerUser } from "../redux/slices/authSlice";
 
 function SignUp() {
   const [email, setEmail] = useState("");
@@ -26,9 +28,42 @@ function SignUp() {
     password: false,
   });
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const { user, loading, error } = useSelector((state) => state.auth);
+
   const isEmailInvalid = touched.email && !email.includes("@");
   const isUsernameInvalid = touched.username && username.length < 3;
   const isPasswordInvalid = touched.password && password.length < 6;
+
+  const handleSubmit = () => {
+    dispatch(registerUser({ username, email, password }));
+  };
+
+  useEffect(() => {
+    if (user) {
+      toast({
+        title: "Account created!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+      navigate("/");
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: error,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  }, [error]);
 
   const bg = useColorModeValue("white", "black");
   const textColor = useColorModeValue("black", "gray.100");
@@ -96,6 +131,8 @@ function SignUp() {
               _hover={{ opacity: 0.85 }}
               w="full"
               mt={4}
+              isLoading={loading}
+              onClick={handleSubmit}
             >
               Sign Up
             </Button>
